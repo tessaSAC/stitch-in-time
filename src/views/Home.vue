@@ -1,46 +1,62 @@
 <template>
-  <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Blank</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Blank</ion-title>
-        </ion-toolbar>
-      </ion-header>
-    
-      <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      </div>
-    </ion-content>
-  </ion-page>
+<div class="Home">
+    <ion-label position="stacked">username</ion-label>
+    <ion-input></ion-input>
+
+    {{ advice }}
+
+    <ion-button @click="getAdvice">get</ion-button>
+</div>
 </template>
 
-<script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import { defineComponent } from 'vue';
+<script>
+// import { defineComponent } from 'vue'
+import '@capacitor-community/http';
+import { Plugins } from '@capacitor/core';
 
-export default defineComponent({
+// Example of a GET request
+const doGet = async () => {
+  // Destructure as close to usage as possible for web plugin to work correctly
+  // when running in the browser
+  const { Http } = Plugins;
+
+  return await Http.request({
+    method: 'GET',
+    url: 'https://api.adviceslip.com/advice',
+  });
+};
+
+export default {
   name: 'Home',
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar
+
+  data: () => ({
+    advice: '',
+  }),
+
+  methods: {
+    getAdvice(query) {
+      if(!query) {
+        return doGet().then(({ data }) => {
+          // const dataInJs = JSON.parse(data)
+          // const slip = dataInJs.slip
+          // this.advice = slip.advice
+
+          this.advice = JSON.parse(data).slip.advice
+        })
+      }
+    }
   }
-});
+}
 </script>
 
 <style scoped>
-#container {
+.Home {
+  background: white;
+}
+
+/* #container {
   text-align: center;
-  
+
   position: absolute;
   left: 0;
   right: 0;
@@ -56,13 +72,13 @@ export default defineComponent({
 #container p {
   font-size: 16px;
   line-height: 22px;
-  
+
   color: #8c8c8c;
-  
+
   margin: 0;
 }
 
 #container a {
   text-decoration: none;
-}
+} */
 </style>
