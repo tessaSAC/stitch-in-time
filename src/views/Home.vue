@@ -1,52 +1,141 @@
 <template>
-<div class="Home">
-    <ion-label position="stacked">username</ion-label>
-    <ion-input></ion-input>
+<IonPage>
+  <IonContent class="Home">
+      {{ advice }}
 
-    {{ advice }}
-
-    <ion-button @click="getAdvice">get</ion-button>
-</div>
+      <IonButton @click="updateAdvice">get</IonButton>
+  </IonContent>
+</IonPage>
 </template>
 
 <script>
-// import { defineComponent } from 'vue'
+import { defineComponent } from 'vue'
+import { IonButton, IonContent, IonPage } from '@ionic/vue';
+
 import '@capacitor-community/http';
 import { Plugins } from '@capacitor/core';
+const { Http } = Plugins;
 
-// Example of a GET request
-const doGet = async () => {
-  // Destructure as close to usage as possible for web plugin to work correctly
-  // when running in the browser
-  const { Http } = Plugins;
-
-  return await Http.request({
-    method: 'GET',
-    url: 'https://api.adviceslip.com/advice',
-  });
-};
-
-export default {
+export default defineComponent({
   name: 'Home',
+
+  components: {
+    IonButton,
+    IonContent,
+    IonPage,
+  },
 
   data: () => ({
     advice: '',
+    hourToFetchNewAdvice: null,
+    lastSaveDate: null,
+    today: new Date(),
   }),
 
-  methods: {
-    getAdvice(query) {
-      if(!query) {
-        return doGet().then(({ data }) => {
-          // const dataInJs = JSON.parse(data)
-          // const slip = dataInJs.slip
-          // this.advice = slip.advice
+  computed: {
+    currentDate() {
+      return this.today.getDate()
+    },
 
-          this.advice = JSON.parse(data).slip.advice
-        })
-      }
+    currentHour() {
+      return this.today.getHours()
+    },
+
+    hourToEraseCurrentAdvice() {
+      let oneHourPrior = this.hourToFetchNewAdvice - 1
+      if(oneHourPrior < 0) oneHourPrior = 23
+      return oneHourPrior
     }
+  },
+
+  async ionViewWillEnter() {
+    // Check if there are a stored date, hour, and advice
+    this.lastSaveDate = await this.getCookie('lastSaveDate')
+    this.hourToFetchNewAdvice = await this.getCookie('hourToFetchNewAdvice')
+    this.advice = await this.getCookie('advice')
+
+    // If we haven't stored an hourToFetchNewAdvice before, calculate and store that and hourToEraseCurrentAdvice
+    if(!this.hourToFetchNewAdvice) {
+      console.log('setHourToFetchNewAdvice')
+      this.hourToFetchNewAdvice = this.currentHour
+
+      this.setCookie({
+        key: 'hourToFetchNewAdvice',
+        value: this.hourToFetchNewAdvice,
+      })
+    }
+
+    // If there's no saved advice fetch and save advice
+    if(!this.advice) this.updateAdvice()
+  },
+
+  methods: {
+    async deleteCookie(optionsObject) {
+      return await Http.deleteCookie(optionsObject);
+    },
+
+    async getCookie(key) {
+      const allCookies = await Http.getCookies()
+      console.log('Got cookies', allCookies);
+
+      allCookies.value.forEach(cookie => {
+        if(cookie.key === key) return cookie.value
+      })
+
+      return null
+    },
+
+    async setCookie(optionsObject) {
+      console.log(optionsObject)
+      const cookie = await Http.setCookie(optionsObject)
+      console.log('set', cookie)
+    },
+
+    async fetchAdvice() {
+      // Fetch a new advice slip when 24 hours have passed
+      return await Http.request({
+        method: 'GET',
+        url: 'https://api.adviceslip.com/advice',
+      }).
+
+      // Save it to the component's state
+      then(({ data }) => {
+        // const dataInJs = JSON.parse(data)
+        // const slip = dataInJs.slip
+        // this.advice = slip.advice
+
+        console.log({ data })
+
+        // Save new advice
+        this.advice = JSON.parse(data).slip.advice
+        this.setCookie({
+          key: 'advice',
+          value: this.advice,
+        })
+
+        // Update lastSaveDate
+        this.lastSaveDate = this.currentDate
+        this.setCookie({
+          key: 'lastSaveDate',
+          value: this.currentDate,
+        })
+      })
+    },
+
+    updateAdvice() {
+      if(this.currentHour === this.hourToFetchNewAdvice && this.currentDate != this.lastSaveDate) this.fetchAdvice()
+
+      // Erase current advice when 23 hours have passed
+      else if (this.currentHour === this.hourToEraseCurrentAdvice && this.advice) {
+        this.advice = ''
+        this.deleteCookie({ key: 'advice' })
+      }
+
+      // Check every 10m if it's time to refresh advice
+      setTimeout(this.updateAdvice, 600000);
+    },
   }
-}
+})
 </script>
 
 <style scoped>
