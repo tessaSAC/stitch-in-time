@@ -54,6 +54,8 @@ export default defineComponent({
     this.hourToFetchNewAdvice = await this.getCookie('hourToFetchNewAdvice')
     this.advice = await this.getCookie('advice')
 
+    console.log('ADVICE', this.advice)
+
     // If we haven't stored an hourToFetchNewAdvice before, calculate and store that and hourToEraseCurrentAdvice
     if(!this.hourToFetchNewAdvice) {
       console.log('setHourToFetchNewAdvice')
@@ -75,19 +77,30 @@ export default defineComponent({
     },
 
     async getCookie(key) {
-      const allCookies = await Http.getCookies()
+      console.log({ key })
+      const allCookiesWrapper = await Http.getCookies()
+      const allCookies = allCookiesWrapper.value
       console.log('Got cookies', allCookies);
 
-      allCookies.value.forEach(cookie => {
-        if(cookie.key === key) return cookie.value
-      })
+      for (let i = 0; i < allCookies.length; ++i) {
+        const currentCookie = allCookies[i]
 
+        if(currentCookie.key === key) {
+          console.log('I\'m true', currentCookie.key, currentCookie.value)
+          return currentCookie.value
+        }
+      }
+
+      console.log('no match')
       return null
     },
 
     async setCookie(optionsObject) {
       console.log(optionsObject)
-      const cookie = await Http.setCookie(optionsObject)
+      const cookie = await Http.setCookie({
+        ...optionsObject,
+        ageDays: 2,  // Set max number of days to save cookie
+      })
       console.log('set', cookie)
     },
 
@@ -107,7 +120,7 @@ export default defineComponent({
         console.log({ data })
 
         // Save new advice
-        this.advice = JSON.parse(data).slip.advice
+        this.advice = JSON.parse(data).slip.advice.toUpperCase()  // All caps to fit within available characters in font
         this.setCookie({
           key: 'advice',
           value: this.advice,
@@ -141,6 +154,7 @@ export default defineComponent({
 <style scoped>
 .Home {
   background: white;
+  font-family: 'HovdenStitch';
 }
 
 /* #container {

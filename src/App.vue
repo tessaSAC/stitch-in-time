@@ -16,3 +16,10 @@ export default defineComponent({
   }
 });
 </script>
+
+<style>
+@font-face {
+  font-family: 'HovdenStitch';
+  src: url('../public/assets/HovdenStitchRegular.otf');
+}
+</style>
