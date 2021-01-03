@@ -54,11 +54,8 @@ export default defineComponent({
     this.hourToFetchNewAdvice = +await this.getCookie('hourToFetchNewAdvice')
     this.advice = await this.getCookie('advice')
 
-    console.log('ADVICE', this.advice)
-
     // If we haven't stored an hourToFetchNewAdvice before, calculate and store that and hourToEraseCurrentAdvice
     if(!this.hourToFetchNewAdvice) {
-      console.log('setHourToFetchNewAdvice')
       this.hourToFetchNewAdvice = this.currentHour
 
       this.setCookie({
@@ -76,31 +73,22 @@ export default defineComponent({
     },
 
     async getCookie(key) {
-      console.log({ key })
       const allCookiesWrapper = await Http.getCookies()
       const allCookies = allCookiesWrapper.value
-      console.log('Got cookies', allCookies);
 
-      for (let i = 0; i < allCookies.length; ++i) {
+      for (let i = 0; i < allCookies.length; ++i) {  // Cannot be forEach
         const currentCookie = allCookies[i]
-
-        if(currentCookie.key === key) {
-          console.log('I\'m true', currentCookie.key, currentCookie.value)
-          return currentCookie.value
-        }
+        if(currentCookie.key === key) return currentCookie.value
       }
 
-      console.log('no match')
       return null
     },
 
     async setCookie(optionsObject) {
-      console.log(optionsObject)
       const cookie = await Http.setCookie({
         ...optionsObject,
         ageDays: 2,  // Set max number of days to save cookie
       })
-      console.log('set', cookie)
     },
 
     async fetchAdvice() {
@@ -115,8 +103,6 @@ export default defineComponent({
         // const dataInJs = JSON.parse(data)
         // const slip = dataInJs.slip
         // this.advice = slip.advice
-
-        console.log({ data })
 
         this.animationState = 'fadeIn'
         this.resetAnimationState()
@@ -138,7 +124,6 @@ export default defineComponent({
     },
 
     updateAdvice() {
-      console.warn('update')
       if(this.currentHour === this.hourToFetchNewAdvice && this.currentDate != this.lastSaveDate) this.fetchAdvice()
 
       // Erase current advice when 23 hours have passed
