@@ -1,16 +1,16 @@
 <template>
 <IonPage>
-    <div class="Home">
-      <p>{{ advice }}</p>
-
-      <IonButton @click="updateAdvice">get</IonButton>
-    </div>
+  <div class="Home">
+    <img src="../../public/assets/embroidery-top.png" alt="leaf and heart flourish" />
+    <p class="embroidery" :class="animationState">{{ advice }}</p>
+    <img src="../../public/assets/embroidery-bottom.png" alt="leaf and heart flourish" />
+  </div>
 </IonPage>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
-import { IonButton, IonContent, IonPage } from '@ionic/vue';
+import { IonPage } from '@ionic/vue';
 
 import '@capacitor-community/http';
 import { Plugins } from '@capacitor/core';
@@ -20,12 +20,12 @@ export default defineComponent({
   name: 'Home',
 
   components: {
-    IonButton,
     IonPage,
   },
 
   data: () => ({
     advice: '',
+    animationState: '',
     hourToFetchNewAdvice: null,
     lastSaveDate: null,
     today: new Date(),
@@ -49,8 +49,8 @@ export default defineComponent({
 
   async ionViewWillEnter() {
     // Check if there are a stored date, hour, and advice
-    this.lastSaveDate = await this.getCookie('lastSaveDate')
-    this.hourToFetchNewAdvice = await this.getCookie('hourToFetchNewAdvice')
+    this.lastSaveDate = +await this.getCookie('lastSaveDate')
+    this.hourToFetchNewAdvice = +await this.getCookie('hourToFetchNewAdvice')
     this.advice = await this.getCookie('advice')
 
     console.log('ADVICE', this.advice)
@@ -66,8 +66,7 @@ export default defineComponent({
       })
     }
 
-    // If there's no saved advice fetch and save advice
-    if(!this.advice) this.updateAdvice()
+    this.updateAdvice()
   },
 
   methods: {
@@ -118,6 +117,9 @@ export default defineComponent({
 
         console.log({ data })
 
+        this.animationState = 'fadeIn'
+        this.resetAnimationState()
+
         // Save new advice
         this.advice = JSON.parse(data).slip.advice.toUpperCase()  // All caps to fit within available characters in font
         this.setCookie({
@@ -135,17 +137,29 @@ export default defineComponent({
     },
 
     updateAdvice() {
+      console.warn('update')
       if(this.currentHour === this.hourToFetchNewAdvice && this.currentDate != this.lastSaveDate) this.fetchAdvice()
 
       // Erase current advice when 23 hours have passed
       else if (this.currentHour === this.hourToEraseCurrentAdvice && this.advice) {
-        this.advice = ''
-        this.deleteCookie({ key: 'advice' })
+        this.animationState = 'fadeOut'
+        this.resetAnimationState()
+
+        setTimeout(() => {
+          this.advice = ''
+          this.deleteCookie({ key: 'advice' })
+        }, 10000);
       }
 
       // Check every 10m if it's time to refresh advice
-      setTimeout(this.updateAdvice, 600000);
+      setTimeout(this.updateAdvice, 600000)
     },
+
+    resetAnimationState() {
+      setTimeout(() => {
+        this.animationState = ''
+      }, 10000);
+    }
   }
 })
 </script>
@@ -153,19 +167,31 @@ export default defineComponent({
 <style scoped>
 .Home {
   background: white;
+  height: 100%;
+  padding: 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   text-align: center;
 
   font-family: 'HovdenStitch';
-  font-size: 8rem;
+  font-size: 6rem;
+}
+
+.embroidery {
+  max-width: 686px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-75%);
 }
 
 .fadeIn {
-  animation: fadeIn ease 60s;
+  animation: fadeIn ease 10s;
 }
+
 .fadeOut {
-  animation: fadeOut ease 60s;
+  animation: fadeOut ease 10s;
 }
 
 @keyframes fadeIn {
@@ -179,10 +205,10 @@ export default defineComponent({
 
 @keyframes fadeOut {
   0% {
-    opacity: 0;
+    opacity: 1;
   }
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
 </style>
