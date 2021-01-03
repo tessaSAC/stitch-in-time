@@ -1,21 +1,10 @@
-<template>
-<IonPage>
-  <div class="Home">
-    <!-- image from https://www.dmc.com/us/new-baby-name-pattern-9005116.html -->
-    <img src="../../public/assets/embroidery-top.png" alt="leaf and heart flourish" />
-    <p class="embroidery" :class="animationState">{{ advice }}</p>
-    <img src="../../public/assets/embroidery-bottom.png" alt="leaf and heart flourish" />
-  </div>
-</IonPage>
-</template>
-
 <script>
 import { defineComponent } from 'vue'
-import { IonPage } from '@ionic/vue';
+import { IonPage } from '@ionic/vue'
 
-import '@capacitor-community/http';
-import { Plugins } from '@capacitor/core';
-const { Http } = Plugins;
+import '@capacitor-community/http'
+import { Plugins } from '@capacitor/core'
+const { Http } = Plugins
 
 export default defineComponent({
   name: 'Home',
@@ -69,7 +58,7 @@ export default defineComponent({
 
   methods: {
     async deleteCookie(optionsObject) {
-      return await Http.deleteCookie(optionsObject);
+      return await Http.deleteCookie(optionsObject)
     },
 
     async getCookie(key) {
@@ -134,7 +123,7 @@ export default defineComponent({
         setTimeout(() => {
           this.advice = ''
           this.deleteCookie({ key: 'advice' })
-        }, 10000);
+        }, 10000)
       }
 
       // Check every 10m if it's time to refresh advice
@@ -144,11 +133,22 @@ export default defineComponent({
     resetAnimationState() {
       setTimeout(() => {
         this.animationState = ''
-      }, 10000);
+      }, 10000)
     }
   }
 })
 </script>
+
+<template>
+<IonPage>
+  <div class="Home">
+    <!-- image from https://www.dmc.com/us/new-baby-name-pattern-9005116.html -->
+    <img src="../../public/assets/embroidery-top.png" alt="leaf and heart flourish" />
+    <p class="embroidery" :class="animationState">{{ advice }}</p>
+    <img src="../../public/assets/embroidery-bottom.png" alt="leaf and heart flourish" />
+  </div>
+</IonPage>
+</template>
 
 <style scoped>
 .Home {
