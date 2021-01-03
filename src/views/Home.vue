@@ -1,6 +1,7 @@
 <template>
 <IonPage>
   <div class="Home">
+    <!-- image from https://www.dmc.com/us/new-baby-name-pattern-9005116.html -->
     <img src="../../public/assets/embroidery-top.png" alt="leaf and heart flourish" />
     <p class="embroidery" :class="animationState">{{ advice }}</p>
     <img src="../../public/assets/embroidery-bottom.png" alt="leaf and heart flourish" />
@@ -173,10 +174,11 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  text-align: center;
 
   font-family: 'HovdenStitch';
   font-size: 6rem;
+  color: #002657;
+  text-align: center;
 }
 
 .embroidery {
