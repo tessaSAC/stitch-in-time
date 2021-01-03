@@ -1,10 +1,10 @@
 <template>
 <IonPage>
-  <IonContent class="Home">
-      {{ advice }}
+    <div class="Home">
+      <p>{{ advice }}</p>
 
       <IonButton @click="updateAdvice">get</IonButton>
-  </IonContent>
+    </div>
 </IonPage>
 </template>
 
@@ -21,7 +21,6 @@ export default defineComponent({
 
   components: {
     IonButton,
-    IonContent,
     IonPage,
   },
 
@@ -154,34 +153,36 @@ export default defineComponent({
 <style scoped>
 .Home {
   background: white;
-  font-family: 'HovdenStitch';
-}
-
-/* #container {
+  display: flex;
+  align-items: center;
   text-align: center;
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  font-family: 'HovdenStitch';
+  font-size: 8rem;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.fadeIn {
+  animation: fadeIn ease 60s;
+}
+.fadeOut {
+  animation: fadeOut ease 60s;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-#container a {
-  text-decoration: none;
-} */
+@keyframes fadeOut {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 </style>
