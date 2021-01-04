@@ -19,7 +19,8 @@ export default defineComponent({
 </template>
 
 <style>
-/* Font source: from https://www.fontspace.com/hovden-stitch-font-f43700 */
+/* Makes cross-stitch font available across the app */
+  /* Font source: from https://www.fontspace.com/hovden-stitch-font-f43700 */
 @font-face {
   font-family: 'HovdenStitch';
   src: url('../public/assets/HovdenStitchRegular.otf');

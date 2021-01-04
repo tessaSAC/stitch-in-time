@@ -2,6 +2,7 @@
 import { defineComponent } from 'vue'
 import { IonPage } from '@ionic/vue'
 
+// @capacitor-community/http imports
 import '@capacitor-community/http'
 import { Plugins } from '@capacitor/core'
 const { Http } = Plugins
@@ -45,10 +46,10 @@ export default defineComponent({
       this.getCookie('advice').then(advice => this.advice = advice)
     ])
 
-    // ^Preferable implementation to below because all three requests can run in parallel
-    // this.lastSaveDate = +await this.getCookie('lastSaveDate')
-    // this.hourToFetchNewAdvice = +await this.getCookie('hourToFetchNewAdvice')
-    // this.advice = await this.getCookie('advice')
+    // ^Preferable implementation to the below approach, because all three requests can run in parallel
+      // this.lastSaveDate = +await this.getCookie('lastSaveDate')
+      // this.hourToFetchNewAdvice = +await this.getCookie('hourToFetchNewAdvice')
+      // this.advice = await this.getCookie('advice')
 
     // If we haven't stored an hourToFetchNewAdvice before, calculate and store that and hourToEraseCurrentAdvice
     if(!this.hourToFetchNewAdvice) this.hourToFetchNewAdvice = this.currentHour
@@ -63,6 +64,8 @@ export default defineComponent({
   },
 
   methods: {
+    // COOKIE HELPER METHODS
+
     async deleteCookie(optionsObject) {
       return await Http.deleteCookie(optionsObject)
     },
@@ -85,6 +88,10 @@ export default defineComponent({
         ageDays: 2,  // Set max number of days to save cookie
       })
     },
+
+
+
+    // ADVICE-RELATED METHODS
 
     async fetchAdvice() {
       // Fetch a new advice slip when 24 hours have passed
@@ -136,6 +143,8 @@ export default defineComponent({
       setTimeout(this.updateAdvice, 600000)
     },
 
+
+    // Animation helper method
     resetAnimationState() {
       setTimeout(() => {
         this.animationState = ''
@@ -157,6 +166,7 @@ export default defineComponent({
 </template>
 
 <style scoped>
+/* Centers content on a white background */
 .Home {
   background: white;
   height: 100%;
@@ -166,12 +176,14 @@ export default defineComponent({
   align-items: center;
   justify-content: space-between;
 
+  /* Styles and horizontally centers text */
   font-family: 'HovdenStitch';
   font-size: 5rem;
   color: #002657;
   text-align: center;
 }
 
+/* Enables text and embroidered flourishes to slightly overlap to enhance the illusion of the flourishes wrapping "around" the text */
 .embroidery {
   max-width: 686px;
   position: absolute;
@@ -179,7 +191,8 @@ export default defineComponent({
   transform: translateY(-75%);
 }
 
-/* https://medium.com/cloud-native-the-gathering/how-to-use-css-to-fade-in-and-fade-out-html-text-and-pictures-f45c11364f08 */
+/* FADE TRANSITION STUFF */
+  /* https://medium.com/cloud-native-the-gathering/how-to-use-css-to-fade-in-and-fade-out-html-text-and-pictures-f45c11364f08 */
 .fadeIn {
   animation: fadeIn ease 10s;
 }
