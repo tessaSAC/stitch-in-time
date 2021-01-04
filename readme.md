@@ -232,7 +232,7 @@ Open `views/Home.vue` and replace the existing `template` with the below code:
 
 &nbsp;
 
-Let's revew what's going on in the template:
+Let's review what's going on in the template:
 - This *view*, or page, is wrapped in the `IonPage` component to [enable us to leverage component lifecycle hooks](https://ionicframework.com/docs/vue/lifecycle).
 - The `Home` class will be used to visually center and style advice in the viewport.
 - **Action required:** The `img` tags are placeholders for you to add personalized decorative flourishes to surround your advice; feel free to also [copy the images from the base repo](https://github.com/tessaSAC/stitch-in-time/tree/main/public/assets) or remove them altogether.
