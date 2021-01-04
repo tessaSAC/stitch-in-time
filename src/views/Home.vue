@@ -39,19 +39,25 @@ export default defineComponent({
 
   async ionViewWillEnter() {
     // Check if there are a stored date, hour, and advice
-    this.lastSaveDate = +await this.getCookie('lastSaveDate')
-    this.hourToFetchNewAdvice = +await this.getCookie('hourToFetchNewAdvice')
-    this.advice = await this.getCookie('advice')
+    await Promise.all([
+      this.getCookie('lastSaveDate').then(lastSaveDate => this.lastSaveDate = +lastSaveDate),
+      this.getCookie('hourToFetchNewAdvice').then(hourToFetchNewAdvice => this.hourToFetchNewAdvice = +hourToFetchNewAdvice),
+      this.getCookie('advice').then(advice => this.advice = advice)
+    ])
+
+    // ^Preferable implementation to below because all three requests can run in parallel
+    // this.lastSaveDate = +await this.getCookie('lastSaveDate')
+    // this.hourToFetchNewAdvice = +await this.getCookie('hourToFetchNewAdvice')
+    // this.advice = await this.getCookie('advice')
 
     // If we haven't stored an hourToFetchNewAdvice before, calculate and store that and hourToEraseCurrentAdvice
-    if(!this.hourToFetchNewAdvice) {
-      this.hourToFetchNewAdvice = this.currentHour
+    if(!this.hourToFetchNewAdvice) this.hourToFetchNewAdvice = this.currentHour
 
-      this.setCookie({
-        key: 'hourToFetchNewAdvice',
-        value: this.hourToFetchNewAdvice,
-      })
-    }
+    // Store it to cookies regardless of status so it doesn't expire
+    this.setCookie({
+      key: 'hourToFetchNewAdvice',
+      value: this.hourToFetchNewAdvice,
+    })
 
     this.updateAdvice()
   },
@@ -85,19 +91,19 @@ export default defineComponent({
       return await Http.request({
         method: 'GET',
         url: 'https://api.adviceslip.com/advice',
-      }).
+      })
 
       // Save it to the component's state
-      then(({ data }) => {
-        // const dataInJs = JSON.parse(data)
-        // const slip = dataInJs.slip
-        // this.advice = slip.advice
-
+      .then(({ data }) => {
         this.animationState = 'fadeIn'
         this.resetAnimationState()
 
         // Save new advice
         this.advice = JSON.parse(data).slip.advice.toUpperCase()  // All caps to fit within available characters in font
+          // In longform:
+            // const dataInJs = JSON.parse(data)
+            // const slip = dataInJs.slip
+            // this.advice = slip.advice
         this.setCookie({
           key: 'advice',
           value: this.advice,
@@ -161,7 +167,7 @@ export default defineComponent({
   justify-content: space-between;
 
   font-family: 'HovdenStitch';
-  font-size: 6rem;
+  font-size: 5rem;
   color: #002657;
   text-align: center;
 }
@@ -169,10 +175,11 @@ export default defineComponent({
 .embroidery {
   max-width: 686px;
   position: absolute;
-  top: 50%;
+  top: 53%;
   transform: translateY(-75%);
 }
 
+/* https://medium.com/cloud-native-the-gathering/how-to-use-css-to-fade-in-and-fade-out-html-text-and-pictures-f45c11364f08 */
 .fadeIn {
   animation: fadeIn ease 10s;
 }
