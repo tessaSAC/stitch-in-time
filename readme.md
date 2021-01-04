@@ -1,17 +1,17 @@
 # Bypassing CORS with the Capacitor Community HTTP Plugin
 
-[CORS](https://www.codecademy.com/articles/what-is-cors), or Cross-Origin Resource Sharing, is not a popular word among developers working with front-end tech. A browser-enforced restriction mainly to protect users from a type of attack known as [cross-site request forgery](https://owasp.org/www-community/attacks/csrf), CORS is more well known for the headaches it causes web developers, and that's before we even think about mentioning mobile applications! But what if there were another way?
+[CORS](https://www.codecademy.com/articles/what-is-cors), or Cross-Origin Resource Sharing, is not a popular word among developers working with front-end tech. A browser-enforced restriction mainly to protect users from a type of attack known as [cross-site request forgery](https://owasp.org/www-community/attacks/csrf), CORS is more well known for the headaches it causes web developers, and that's before we even think to mention mobile applications! But what if there were a better way?
 
-Thanks to the [Capacitor Community](https://github.com/capacitor-community/welcome), there is! The Capacitor Community is an open-source working group that builds and maintains useful tools and plugins for Ionic's [Capacitor runtime](https://github.com/ionic-team/capacitor), and today we'll be looking at how to use its HTTP plugin to sidestep CORS and smoothly make successful [HTTP requests](https://www.tutorialspoint.com/http/http_requests.htm) across desktop and mobile devices.
+Thanks to the [Capacitor Community](https://github.com/capacitor-community/welcome), there is! The Capacitor Community is an open-source working group that builds and maintains useful tools and plugins for Ionic's [Capacitor runtime](https://github.com/ionic-team/capacitor), and its HTTP plugin empowers developers to sidestep CORS and smoothly make successful [HTTP requests](https://www.tutorialspoint.com/http/http_requests.htm) across desktop and mobile devices.
 
-Let's use the plugin to power an advice-a-day app to familiarize ourselves with its inner workings and API.
+Let's get to know the plugin by using it to build an aesthetic daily advice app!
 
 
 ![Screenshot of cross-stitched advice](./public/assets/readme/app_preview.jpg?raw=true "Being kind is more rewarding than being right.")
 
 ## What we'll build
 
-*A Vue.js app loads and displays one cross-stitched piece of advice per day from the [Advice Slip JSON API](https://api.adviceslip.com) and can be deployed cross platform.*
+*A Vue.js app that loads and displays one cross-stitched piece of advice per day from the [Advice Slip JSON API](https://api.adviceslip.com) and which can be deployed cross platform.*
 
 &nbsp;
 
@@ -39,6 +39,8 @@ In order to follow along, it might be helpful to have some understanding of the 
 
 ## Getting started
 
+#### Note: If at any point you get lost, you can always refer back to the example code in the [main repo](https://github.com/tessaSAC/stitch-in-time).
+
 You can either [clone the `startingPoint` branch](https://github.com/tessaSAC/stitch-in-time/tree/startingPoint) or start your own project from scratch with the following steps:
 
 1. Create a new Ionic Vue project as per [Creating a project with the Ionic CLI](https://ionicframework.com/docs/vue/quickstart#creating-a-project-with-the-ionic-cli)
@@ -51,7 +53,7 @@ npx cap sync
 
 > ### 😬 Tip
 >
-> If, after running both commands, you see the error `Capacitor could not find the web assets directory "pathToYourRepo/dist"`, try running `yarn build` or `npm build` and before `npx cap sync` a second time.
+> If, after running both commands, you see the error `Capacitor could not find the web assets directory "pathToYourRepo/dist"`, try running `yarn build` or `npm build` before running `npx cap sync` a second time.
 
 &nbsp;
 
@@ -69,14 +71,14 @@ npx cap sync
 ```
 
 > ### 💡 Tip:
-> Although for the purposes of this tutorial CSS styles will be contained within Vue's [Single File Components](https://v3.vuejs.org/guide/single-file-component.html) for clarity, when it comes to your own projects, consider putting global styles in your [`src/theme` folder](https://ionicframework.com/docs/theming/themes).
+> For the purposes of this tutorial, CSS styles will be contained within Vue's [Single File Components](https://v3.vuejs.org/guide/single-file-component.html) so that all changes are explicitly visible. However when it comes to your own projects, consider putting global styles in your [`src/theme` folder](https://ionicframework.com/docs/theming/themes) when necessary..
 
 &nbsp;
 
 ## Designing the order of operations
-The basic idea for this app's functionality is that it will fetch and display a max of one piece of advice per 24 hours, regardless of whether the user refreshes the page or leaves the app, and erase the current advice approximately one hour before new advice is fetched.
+The basic idea for this app's functionality is that it will fetch and display a maximum of one new piece of advice per 24 hours, regardless of whether the user refreshes the page or leaves the app, and erase the current advice approximately one hour before new advice is fetched.
 
-While this concept may seem simple on its face, it requires quite a bit of state-tracking in order to ensure the expected behavior, and therefore you might be helpful to draw or write out a rough plan for how you expect things to go as I've done here:
+While this concept may seem simple on its face, it requires quite a bit of state tracking in order to ensure the expected behavior. You might, like me, find it helpful to draw or write out a rough plan for how you expect things to go as I've done here:
 
 ![Screenshot of handwritten flowchart roughly diagramming above behavior](./public/assets/readme/planning_notes.jpg?raw=true "notes")
 
@@ -124,15 +126,15 @@ export default defineComponent({
     // For more on`ionViewWillEnter`, see: https://ionicframework.com/docs/vue/lifecycle#guidance-for-each-lifecycle-method
   },
 
-  methods: {}
+  methods: {},
 })
 </script>
 ```
-##### _**Optional:** Move the `script` tag to be at the top of the file, above the `template` tag as per the [Vue Style Guide](https://vuejs.org/v2/style-guide/#Single-file-component-top-level-element-order-recommended). Once you get used to this pattern it can speed up your development process by reducing the scrolling between `script` and `template` and between `template` and `style`._
+#### _**Optional:** Move the `script` tag to be at the top of the file, above the `template` tag as per the [Vue Style Guide](https://vuejs.org/v2/style-guide/#Single-file-component-top-level-element-order-recommended). Once you get used to this pattern it can speed up your development process by reducing the scrolling between `script` and `template` and between `template` and `style`._
 
 &nbsp;
 
-The first thing we'll need to do is import our HTTP plugin by adding the following code to the top of the `script` tag as per the [README](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L106):
+In order to use the HTTP Plugin, first import it by adding the following code to the top of the `script` tag as per the [README](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L106):
 
 ```js
 import '@capacitor-community/http'
@@ -140,7 +142,7 @@ import { Plugins } from '@capacitor/core'
 const { Http } = Plugins
 ```
 
-Now we have access to the HTTP plugin and its helper methods inside this component, so we can add the following functions to our component's `methods`:
+Now that we have access to the HTTP plugin and its helper methods inside this component, add the following functions to the `Home` component's `methods`:
 
 ```js
 async fetchAdvice() {
@@ -149,7 +151,7 @@ async fetchAdvice() {
     url: 'https://api.adviceslip.com/advice',
   })
   .then(({ data }) => {
-    // Set dynamic class to fade in text
+    // Set dynamic class to fade in advice
     this.animationState = 'fadeIn'
     this.resetAnimationState()
 
@@ -167,11 +169,13 @@ async fetchAdvice() {
 },
 
 updateAdvice() {
+
   // If 24h have passed, fetch new advice
   if(this.currentHour === this.hourToFetchNewAdvice && this.currentDate != this.lastSaveDate) this.fetchAdvice()
 
   // If 23 hours have passed, start fading out current advice
   else if (this.currentHour === this.hourToEraseCurrentAdvice && this.advice) {
+
     // Set dynamic class to fade out text
     this.animationState = 'fadeOut'
     this.resetAnimationState()
@@ -192,9 +196,9 @@ resetAnimationState() {
   setTimeout(() => {
     this.animationState = ''
   }, 10000)
-}
+},
 ```
-##### The `fetchAdvice` method is almost identical to the `GET` example in the HTTP Plugin's README, but its syntax has been reordered to fit within Vue's `methods` style. The `HTTP.request` method allows us to make [HTTP calls](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) across different deploy targets without worrying about CORS issues. Here we're using it to request advice from the [Advice Slip JSON API's random advice GET endpoint](https://api.adviceslip.com/#endpoint-random).
+#### The `fetchAdvice` method is almost identical to the `GET` example in the HTTP Plugin's README, but its syntax has been reordered to fit within [Vue's `methods` style](https://v3.vuejs.org/guide/data-methods.html#methods). The `HTTP.request` method enables us to make [HTTP calls](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) across different deploy targets without worrying about CORS issues. Here we're using it to request advice from the [Advice Slip JSON API's random advice GET endpoint](https://api.adviceslip.com/#endpoint-random).
 
 
 &nbsp;
@@ -228,10 +232,10 @@ Open `views/Home.vue` and replace the existing `template` with the below code:
 
 &nbsp;
 
-We won't need to mess with this too much going forward, but let's briefly about what's happening here:
+Let's revew what's going on in the template:
 - This *view*, or page, is wrapped in the `IonPage` component to [enable us to leverage component lifecycle hooks](https://ionicframework.com/docs/vue/lifecycle).
 - The `Home` class will be used to visually center and style advice in the viewport.
-- The `img` tags are placeholders for you to add personalized decorative flourishes to surround your advice; feel free to also [copy the images from the base repo](https://github.com/tessaSAC/stitch-in-time/tree/main/public/assets) or remove them altogether.
+- **Action required:** The `img` tags are placeholders for you to add personalized decorative flourishes to surround your advice; feel free to also [copy the images from the base repo](https://github.com/tessaSAC/stitch-in-time/tree/main/public/assets) or remove them altogether.
 - The `p` tag is where we'll render advice from the Advice Slip JSON API.
 - The [v-bound](https://v3.vuejs.org/api/directives.html#v-bind) `animationState` class enables us to dynamically fade advice in and out as necessary.
 
@@ -292,29 +296,29 @@ Next, replace the `style` tag with the following:
 </style>
 ```
 
-Now if you run `yarn serve` or `npm serve`, you should be able to see some advice in your local preview in your browser!
+Now if you run `yarn serve` or `npm serve`, you should be able to see some advice in the local preview in your browser!
 
 &nbsp;
 
 ## Persisting state
 
-While it's great that our advice is rendering and all, you may have noticed a small catch: we get a new piece of advice on every page load, even though our `updateAdvice` method is supposed to wait 24 hours before fetching new advice. This is because our state is stored only within the component, which means when the component disappears, so does our data.
+While it's great that our advice is rendering and all, you may have noticed a small catch: we get a new piece of advice on every page load, even though the `updateAdvice` method is supposed to wait 24 hours before fetching new advice. This is because the state is stored only within the component, which means when the component disappears, so does the data.
 
 To get around this, we'll store some of our state in [cookies](https://en.wikipedia.org/wiki/HTTP_cookie), which can outlive the component lifecycle.
 
-To get started, add the following helpers to the component's `methods`:
+### To get started, add the following helpers to the component's `methods`:
 
 ```js
 async setCookie(optionsObject) {
   const cookie = await Http.setCookie({
     ...optionsObject,
-    ageDays: 2,  // Set max number of days to save cookie
+    ageDays: 2,  // Sets max number of days to save cookie
   })
 },
 ```
-##### This method is very similar to the `setCookie` example in the HTTP Plugin's README, but its syntax has been reordered to fit within Vue's `methods` style. It has also been augmented to expire any cookies after two days.
+#### This method is very similar to the `setCookie` example in the HTTP Plugin's README, but its syntax has been reordered to fit within Vue's `methods` style. It has also been augmented to expire any cookies after two days.
 
-##### One potential point of confusion here is that when looking at the [Http.setCookie source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/web.ts#L112), it may seem like this method is behaving essentially identically to the [browser's HTTP Set-Cookie approach](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie); however, if you try to pass in a value for `name` or `SameSite`, you will quickly discover this is not so. The [method's interface](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L99) reveals that this method will only take four potential pieces of data: `url`, `key`, `value`, and `ageDays`, where `key` becomes the cookie's `name`, and `ageDays` its `Expires` value.
+#### One potential point of confusion here is that when looking at the [Http.setCookie source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/web.ts#L112), it may seem like this method is behaving essentially identically to the [browser's HTTP Set-Cookie approach](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie); however, if you try to pass in a value for `name` or `SameSite`, you will quickly discover this is *not* what's happening. The [method's interface](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L99) reveals that this method will only take four potential pieces of data: `url`, `key`, `value`, and `ageDays`, where `key` becomes the cookie's `name` and `ageDays` its `Expires` value.
 
 &nbsp;
 
@@ -324,7 +328,7 @@ async deleteCookie(optionsObject) {
 },
 
 ```
-##### This method is similar to the `deleteCookie` example in the HTTP Plugin's README, with the addition of an optional `optionsObject` argument which can be passed to the HTTP Plugin's `deleteCookie` method. If we check out [the interface for this method in the source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L112), we can see that it will accept either a `key` or a `url` to specify which cookie should be deleted.
+#### This method is similar to the `deleteCookie` example in the HTTP Plugin's README, with the addition of an optional `optionsObject` argument which can be passed to the HTTP Plugin's `deleteCookie` method. If we check out [the interface for this method in the source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L112), we can see that it will accept either a `key` or a `url` to specify which cookie should be deleted.
 
 &nbsp;
 
@@ -341,18 +345,18 @@ async getCookie(key) {
   return null
 },
 ```
-##### This method is similar to the `getCookies` example in the HTTP Plugin's README. However, that method will return an Array of all cookies, so if we want to get a specific one we'll have to filter the list ourselves.
+#### This method is similar to the `getCookies` example in the HTTP Plugin's README. However, that method will return an Array of all cookies, so if we want to get a specific one we'll have to filter the list ourselves.
 
-##### Note that `forEach` will not work here as the loop cannot be short-circuited by a `return` statement.
+#### Note that a `forEach` will not work here as that type of loop cannot be short-circuited by a `return` statement.
 
 &nbsp;
 
-Now that we have access to some cookie helper methods, let's use them.
+### Now that we have access to some cookie helper methods, let's use them.
 
 First, add them to `ionViewWillEnter`:
 ```js
 async ionViewWillEnter() {
-  // Check if there are a stored date, hour, and advice in cookies, i.e. outside component/session state
+  // Check if there are a stored lastSaveDate, hourToFetchNewAdvice, and advice in cookies, i.e. outside component/session state
   await Promise.all([
     this.getCookie('lastSaveDate').then(lastSaveDate => this.lastSaveDate = +lastSaveDate),
     this.getCookie('hourToFetchNewAdvice').then(hourToFetchNewAdvice => this.hourToFetchNewAdvice = +hourToFetchNewAdvice),
@@ -385,7 +389,7 @@ async fetchAdvice() {
 
     this.advice = JSON.parse(data).slip.advice.toUpperCase()
 
-    // Save the advice to a cookie, too
+    // Save the advice to a cookie too
     this.setCookie({
       key: 'advice',
       value: this.advice,
@@ -434,26 +438,27 @@ We did it! Now the app will fetch and erase advice once every 24 hours as design
 
 ## Review
 
-We covered a lot of concepts from the Capacitor Community HTTP Plugin today including:
+We covered a lot of APIs and concepts from the Capacitor Community HTTP Plugin today including:
 - How to make an HTTP `GET` request
 - How to save a cookie
   - Which properties of a cookie can be set with the plugin
 - How to get a *specific* cookie
-- How to delete a *specific cookie
+- How to delete a *specific* cookie
 - How to use the source code to answer questions not covered by the README
 
 &nbsp;
 
 ## Next steps
 
-What's next in the exciting world of cross-platform Vue apps? If you're short on ideas, here's a few suggestions for next steps
+What's next in the exciting world of cross-platform Vue apps? If you're short on ideas, here are a few suggestions for next steps:
 
 - [Offline first](https://ionicframework.com/blog/best-practices-for-building-offline-apps): Try persisting state using another method, such as service-worker caching
 - PWA/mobile: Try deploying the app to your phone as a [Progressive Web App](https://ionicframework.com/docs/vue/your-first-app/6-deploying-mobile) or a native [Android/iOS one](https://ionicframework.com/docs/vue/your-first-app/6-deploying-mobile)
   - Note: If you opted to generate your own project for this tutorial instead of cloning from the repo, you may need to follow some [additional installation steps](https://github.com/capacitor-community/http#installation) to get the HTTP Plugin working on Android
-- Loading state: How might you save the state of the app such that if the user exits while advice is fading in or out, the transition will resume at the same spot tnext time they reopen the app?
+- Styling: Cross stitch not your thing? What theme would you give this app?
+- Loading state: How might you save the state of the app such that if the user exits while advice is fading in or out, the transition will resume at the same spot the next time they reopen the app?
 - [Another API](https://dev.to/biplov/15-fun-apis-for-your-next-project-5053): There are lots of free APIs out there; how would you apply the HTTP Plugin to a new project?
 
 &nbsp;
 
-### 🎉 Happy coding! 🎉
+### Thanks for reading and happy coding! 🎉
