@@ -39,7 +39,7 @@ In order to follow along, it might be helpful to have some understanding of the 
 
 ## Getting started
 
-You can either [clone this branch](TODO: Add link) or start your own project from scratch with the following steps:
+You can either [clone the `startingPoint` branch](https://github.com/tessaSAC/stitch-in-time/tree/startingPoint) or start your own project from scratch with the following steps:
 
 1. Create a new Ionic Vue project as per [Creating a project with the Ionic CLI](https://ionicframework.com/docs/vue/quickstart#creating-a-project-with-the-ionic-cli)
 2. `cd` into your project and [install the HTTP plugin](https://github.com/capacitor-community/http) with the following commands:
