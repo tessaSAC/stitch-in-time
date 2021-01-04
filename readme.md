@@ -39,7 +39,7 @@ In order to follow along, it might be helpful to have some understanding of the 
 
 ## Getting started
 
-#### Note: If at any point you get lost, you can always refer back to the example code in the [main repo](https://github.com/tessaSAC/stitch-in-time).
+##### Note: If at any point you get lost, you can always refer back to the example code in the [main repo](https://github.com/tessaSAC/stitch-in-time).
 
 You can either [clone the `startingPoint` branch](https://github.com/tessaSAC/stitch-in-time/tree/startingPoint) or start your own project from scratch with the following steps:
 
@@ -130,7 +130,7 @@ export default defineComponent({
 })
 </script>
 ```
-#### _**Optional:** Move the `script` tag to be at the top of the file, above the `template` tag as per the [Vue Style Guide](https://vuejs.org/v2/style-guide/#Single-file-component-top-level-element-order-recommended). Once you get used to this pattern it can speed up your development process by reducing the scrolling between `script` and `template` and between `template` and `style`._
+##### _**Optional:** Move the `script` tag to be at the top of the file, above the `template` tag as per the [Vue Style Guide](https://vuejs.org/v2/style-guide/#Single-file-component-top-level-element-order-recommended). Once you get used to this pattern it can speed up your development process by reducing the scrolling between `script` and `template` and between `template` and `style`._
 
 &nbsp;
 
@@ -198,7 +198,7 @@ resetAnimationState() {
   }, 10000)
 },
 ```
-#### The `fetchAdvice` method is almost identical to the `GET` example in the HTTP Plugin's README, but its syntax has been reordered to fit within [Vue's `methods` style](https://v3.vuejs.org/guide/data-methods.html#methods). The `HTTP.request` method enables us to make [HTTP calls](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) across different deploy targets without worrying about CORS issues. Here we're using it to request advice from the [Advice Slip JSON API's random advice GET endpoint](https://api.adviceslip.com/#endpoint-random).
+##### The `fetchAdvice` method is almost identical to the `GET` example in the HTTP Plugin's README, but its syntax has been reordered to fit within [Vue's `methods` style](https://v3.vuejs.org/guide/data-methods.html#methods). The `HTTP.request` method enables us to make [HTTP calls](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) across different deploy targets without worrying about CORS issues. Here we're using it to request advice from the [Advice Slip JSON API's random advice GET endpoint](https://api.adviceslip.com/#endpoint-random).
 
 
 &nbsp;
@@ -316,9 +316,9 @@ async setCookie(optionsObject) {
   })
 },
 ```
-#### This method is very similar to the `setCookie` example in the HTTP Plugin's README, but its syntax has been reordered to fit within Vue's `methods` style. It has also been augmented to expire any cookies after two days.
+##### This method is very similar to the `setCookie` example in the HTTP Plugin's README, but its syntax has been reordered to fit within Vue's `methods` style. It has also been augmented to expire any cookies after two days.
 
-#### One potential point of confusion here is that when looking at the [Http.setCookie source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/web.ts#L112), it may seem like this method is behaving essentially identically to the [browser's HTTP Set-Cookie approach](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie); however, if you try to pass in a value for `name` or `SameSite`, you will quickly discover this is *not* what's happening. The [method's interface](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L99) reveals that this method will only take four potential pieces of data: `url`, `key`, `value`, and `ageDays`, where `key` becomes the cookie's `name` and `ageDays` its `Expires` value.
+##### One potential point of confusion here is that when looking at the [Http.setCookie source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/web.ts#L112), it may seem like this method is behaving essentially identically to the [browser's HTTP Set-Cookie approach](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie); however, if you try to pass in a value for `name` or `SameSite`, you will quickly discover this is *not* what's happening. The [method's interface](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L99) reveals that this method will only take four potential pieces of data: `url`, `key`, `value`, and `ageDays`, where `key` becomes the cookie's `name` and `ageDays` its `Expires` value.
 
 &nbsp;
 
@@ -328,7 +328,7 @@ async deleteCookie(optionsObject) {
 },
 
 ```
-#### This method is similar to the `deleteCookie` example in the HTTP Plugin's README, with the addition of an optional `optionsObject` argument which can be passed to the HTTP Plugin's `deleteCookie` method. If we check out [the interface for this method in the source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L112), we can see that it will accept either a `key` or a `url` to specify which cookie should be deleted.
+##### This method is similar to the `deleteCookie` example in the HTTP Plugin's README, with the addition of an optional `optionsObject` argument which can be passed to the HTTP Plugin's `deleteCookie` method. If we check out [the interface for this method in the source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L112), we can see that it will accept either a `key` or a `url` to specify which cookie should be deleted.
 
 &nbsp;
 
@@ -345,9 +345,9 @@ async getCookie(key) {
   return null
 },
 ```
-#### This method is similar to the `getCookies` example in the HTTP Plugin's README. However, that method will return an Array of all cookies, so if we want to get a specific one we'll have to filter the list ourselves.
+##### This method is similar to the `getCookies` example in the HTTP Plugin's README. However, that method will return an Array of all cookies, so if we want to get a specific one we'll have to filter the list ourselves.
 
-#### Note that a `forEach` will not work here as that type of loop cannot be short-circuited by a `return` statement.
+##### Note that a `forEach` will not work here as that type of loop cannot be short-circuited by a `return` statement.
 
 &nbsp;
 
