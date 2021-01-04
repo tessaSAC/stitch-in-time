@@ -6,11 +6,12 @@ Thanks to the [Capacitor Community](https://github.com/capacitor-community/welco
 
 Let's use the plugin to power an advice-a-day app to familiarize ourselves with its inner workings and API.
 
-&nbsp;
+
+![Screenshot of cross-stitched advice](./public/assets/readme/app_preview.jpg?raw=true "Being kind is more rewarding than being right.")
 
 ## What we'll build
 
-- A Vue.js app loads and displays one cross-stitched piece of advice per day from the [Advice Slip JSON API](https://api.adviceslip.com) and can be deployed cross platform.
+*A Vue.js app loads and displays one cross-stitched piece of advice per day from the [Advice Slip JSON API](https://api.adviceslip.com) and can be deployed cross platform.*
 
 &nbsp;
 
@@ -77,14 +78,14 @@ The basic idea for this app's functionality is that it will fetch and display a 
 
 While this concept may seem simple on its face, it requires quite a bit of state-tracking in order to ensure the expected behavior, and therefore you might be helpful to draw or write out a rough plan for how you expect things to go as I've done here:
 
-# TODO: insert image
+![Screenshot of handwritten flowchart roughly diagramming above behavior](./public/assets/readme/planning_notes.jpg?raw=true "notes")
 
 &nbsp;
 
 ## Preparing HTTP helper functions
 
 
-Replace your `script` tag with the below starter code:
+In `src/views/Home.vue`, replace your `script` tag with the below starter code:
 ```vue
 <script>
 import { defineComponent } from 'vue'
@@ -230,7 +231,7 @@ Open `views/Home.vue` and replace the existing `template` with the below code:
 We won't need to mess with this too much going forward, but let's briefly about what's happening here:
 - This *view*, or page, is wrapped in the `IonPage` component to [enable us to leverage component lifecycle hooks](https://ionicframework.com/docs/vue/lifecycle).
 - The `Home` class will be used to visually center and style advice in the viewport.
-- The `img` tags are placeholders for you to add personalized decorative flourishes to surround your advice; feel free to also [copy the images from the base repo](TODO: add link) or remove them altogether.
+- The `img` tags are placeholders for you to add personalized decorative flourishes to surround your advice; feel free to also [copy the images from the base repo](https://github.com/tessaSAC/stitch-in-time/tree/main/public/assets) or remove them altogether.
 - The `p` tag is where we'll render advice from the Advice Slip JSON API.
 - The [v-bound](https://v3.vuejs.org/api/directives.html#v-bind) `animationState` class enables us to dynamically fade advice in and out as necessary.
 
