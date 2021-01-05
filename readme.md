@@ -1,6 +1,6 @@
 # Bypassing CORS with the Capacitor Community HTTP Plugin
 
-[CORS](https://www.codecademy.com/articles/what-is-cors), or Cross-Origin Resource Sharing, is not a popular word among developers working with front-end tech. A browser-enforced restriction mainly to protect users from a type of attack known as [cross-site request forgery](https://owasp.org/www-community/attacks/csrf), CORS is more well known for the headaches it causes web developers, and that's before we even think to mention mobile applications! But what if there were a better way?
+[CORS](https://www.codecademy.com/articles/what-is-cors), or Cross-Origin Resource Sharing, is notorious among front-end developers for being tricky to work with. A browser-enforced restriction to protect users from a type of attack known as [cross-site request forgery](https://owasp.org/www-community/attacks/csrf), CORS is more well known for the headaches it causes web developers, and that's before we even think to mention mobile applications! But what if there were a better way?
 
 Thanks to the [Capacitor Community](https://github.com/capacitor-community/welcome), there is! The Capacitor Community is an open-source working group that builds and maintains useful tools and plugins for Ionic's [Capacitor runtime](https://github.com/ionic-team/capacitor), and its HTTP plugin empowers developers to sidestep CORS and smoothly make successful [HTTP requests](https://www.tutorialspoint.com/http/http_requests.htm) across desktop and mobile devices.
 
@@ -53,7 +53,7 @@ npx cap sync
 
 > ### 😬 Tip
 >
-> If, after running both commands, you see the error `Capacitor could not find the web assets directory "pathToYourRepo/dist"`, try running `yarn build` or `npm build` before running `npx cap sync` a second time.
+> If, after running both commands, you see the error `Capacitor could not find the web assets directory "pathToYourRepo/dist"`, try running `yarn build` or `npm build` before running `npx cap sync` a second time. If all goes well, you'll get a confirmation message similar to this one: `Sync finished in 0.011s`.
 
 &nbsp;
 
@@ -70,15 +70,30 @@ npx cap sync
 </style>
 ```
 
+Your file structure should now look similar to this:
+######
+```bash
+├── public
+│   ├── assets
+│   │   ├── HovdenStitchRegular.otf
+│
+├── src
+│   ├── router
+│   ├── theme
+│   ├── views
+│   │   ├── Home.vue
+│   ├── App.vue
+```
+
 > ### 💡 Tip:
-> For the purposes of this tutorial, CSS styles will be contained within Vue's [Single File Components](https://v3.vuejs.org/guide/single-file-component.html) so that all changes are explicitly visible. However when it comes to your own projects, consider putting global styles in your [`src/theme` folder](https://ionicframework.com/docs/theming/themes) when necessary..
+> For the purposes of this tutorial, CSS styles will be contained within Vue's [Single File Components](https://v3.vuejs.org/guide/single-file-component.html) so that all changes are explicitly visible. However when it comes to your own projects, consider putting global styles in your [`src/theme` folder](https://ionicframework.com/docs/theming/themes) when necessary.
 
 &nbsp;
 
 ## Designing the order of operations
-The basic idea for this app's functionality is that it will fetch and display a maximum of one new piece of advice per 24 hours, regardless of whether the user refreshes the page or leaves the app, and erase the current advice approximately one hour before new advice is fetched.
+The basic idea for this app's functionality is that it will fetch and display a maximum of one new piece of advice every 24 hours (regardless of whether the user refreshes the page or leaves the app) and erase the current advice approximately one hour before new advice is fetched.
 
-While this concept may seem simple on its face, it requires quite a bit of state tracking in order to ensure the expected behavior. You might, like me, find it helpful to draw or write out a rough plan for how you expect things to go as I've done here:
+While this concept may seem simple on the surface, it requires quite a bit of state tracking in order to ensure the expected behavior. To clarify my approach, I find it helpful to draw or write out a rough plan for how I expect things to go:
 
 ![Screenshot of handwritten flowchart roughly diagramming above behavior](./public/assets/readme/planning_notes.jpg?raw=true "notes")
 
@@ -133,6 +148,8 @@ export default defineComponent({
 ##### _**Optional:** Move the `script` tag to be at the top of the file, above the `template` tag as per the [Vue Style Guide](https://vuejs.org/v2/style-guide/#Single-file-component-top-level-element-order-recommended). Once you get used to this pattern it can speed up your development process by reducing the scrolling between `script` and `template` and between `template` and `style`._
 
 &nbsp;
+
+### Integrating the plugin
 
 In order to use the HTTP Plugin, first import it by adding the following code to the top of the `script` tag as per the [README](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L106):
 
@@ -298,6 +315,8 @@ Next, replace the `style` tag with the following:
 
 Now if you run `yarn serve` or `npm serve`, you should be able to see some advice in the local preview in your browser!
 
+![Screenshot of cross-stitched advice at localhost:8080/home](./public/assets/readme/app_preview-02.jpg?raw=true "Give up your seat for someone who needs it.")
+
 &nbsp;
 
 ## Persisting state
@@ -318,7 +337,7 @@ async setCookie(optionsObject) {
 ```
 ##### This method is very similar to the `setCookie` example in the HTTP Plugin's README, but its syntax has been reordered to fit within Vue's `methods` style. It has also been augmented to expire any cookies after two days.
 
-##### One potential point of confusion here is that when looking at the [Http.setCookie source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/web.ts#L112), it may seem like this method is behaving essentially identically to the [browser's HTTP Set-Cookie approach](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie); however, if you try to pass in a value for `name` or `SameSite`, you will quickly discover this is *not* what's happening. The [method's interface](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L99) reveals that this method will only take four potential pieces of data: `url`, `key`, `value`, and `ageDays`, where `key` becomes the cookie's `name` and `ageDays` its `Expires` value.
+##### One potential point of confusion here is that you may assume (or infer from the [Http.setCookie source code](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/web.ts#L112)) that `setCookie` behaves identically to the [browser's HTTP Set-Cookie approach](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie); however, if you try to pass in a value for `name` or `SameSite`, you will quickly discover this is *not* what's happening. The [method's interface](https://github.com/capacitor-community/http/blob/455dc0cb0add1b872dbc914077b9754df4d8c0f3/src/definitions.ts#L99) reveals that this method will only take four potential pieces of data: `url`, `key`, `value`, and `ageDays`, where `key` becomes the cookie's `name` and `ageDays` its `Expires` value.
 
 &nbsp;
 
